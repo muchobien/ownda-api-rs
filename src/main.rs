@@ -1,61 +1,44 @@
+use std::net::SocketAddr;
+
 use anyhow::Result;
 use argon2::Argon2;
-use async_graphql::{
-    extensions::{ApolloTracing, Logger},
-    http::{playground_source, GraphQLPlaygroundConfig},
-};
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::{
-    extract::Extension,
-    response::{self, IntoResponse},
-    routing::get,
-    AddExtensionLayer, Router, Server,
-};
-use ownda::{
-    domain::jwt::Claims,
-    gql::{build_schema, GqlSchema},
-};
-use sea_orm::{Database, DatabaseConnection};
-use std::env;
+use async_graphql::extensions;
+use axum::{AddExtensionLayer, Server};
+use ownda::{gql::build_schema, routes, settings::SETTINGS};
+use sea_orm::Database;
 use tower::ServiceBuilder;
-
-async fn graphql_handler(
-    Extension(conn): Extension<DatabaseConnection>,
-    schema: Extension<GqlSchema>,
-    req: GraphQLRequest,
-    claims: Option<Claims>,
-) -> GraphQLResponse {
-    schema
-        .execute(req.into_inner().data(conn).data(claims))
-        .await
-        .into()
-}
-
-async fn graphql_playground() -> impl IntoResponse {
-    response::Html(playground_source(GraphQLPlaygroundConfig::new("/")))
-}
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let conn = Database::connect(env::var("DATABASE_URL")?).await?;
+    env_logger::init();
+    let conn = Database::connect(SETTINGS.database.get_connect_options()).await?;
     let schema = build_schema()
         .data(Argon2::default())
-        .extension(ApolloTracing)
-        .extension(Logger)
+        .extension(extensions::ApolloTracing)
+        .extension(extensions::Logger)
         .finish();
-    let app = Router::new()
-        .route("/", get(graphql_playground).post(graphql_handler))
-        .layer(
-            ServiceBuilder::new()
-                .layer(AddExtensionLayer::new(conn))
-                .layer(AddExtensionLayer::new(schema)),
-        );
 
-    println!("Playground: http://localhost:8000");
+    let app = routes::gql().layer(
+        ServiceBuilder::new()
+            .layer(AddExtensionLayer::new(conn))
+            .layer(AddExtensionLayer::new(schema)),
+    );
 
-    Server::bind(&"0.0.0.0:8000".parse()?)
-        .serve(app.into_make_service())
-        .await?;
+    let addr = SETTINGS.application.get_address()?;
+    print_init_messages(&addr)?;
+
+    Server::bind(&addr).serve(app.into_make_service()).await?;
+
+    Ok(())
+}
+
+fn print_init_messages(addr: &SocketAddr) -> Result<()> {
+    log::info!("Server running on {}", addr);
+    log::info!(
+        "GraphQL link: http://{}{}",
+        addr,
+        SETTINGS.application.graphql.path
+    );
 
     Ok(())
 }

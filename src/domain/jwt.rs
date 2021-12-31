@@ -14,6 +14,8 @@ use serde_json::json;
 use std::time::Duration;
 use std::time::SystemTime;
 
+use crate::settings::SETTINGS;
+
 #[derive(Debug)]
 struct Keys {
     encoding: EncodingKey,
@@ -29,10 +31,7 @@ impl Keys {
     }
 }
 
-static KEYS: Lazy<Keys> = Lazy::new(|| {
-    let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
-    Keys::new(secret.as_bytes())
-});
+static KEYS: Lazy<Keys> = Lazy::new(|| Keys::new(SETTINGS.secret.jwt_key.as_bytes()));
 
 #[derive(Debug)]
 pub enum AuthError {
