@@ -27,7 +27,7 @@ version = "1.0.132"
 features = ["derive"]
 
 [dependencies.async-graphql]
-version = "3.0.18"
+version = "3.0.19"
 features = ["uuid", "chrono", "apollo_tracing", "log"]
 
 [dependencies.tokio]
