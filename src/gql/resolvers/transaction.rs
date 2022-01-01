@@ -1,8 +1,21 @@
 use crate::domain::transaction::create::TransactionInput;
 use crate::gql::guard::AuthGuard;
-use crate::{domain::transaction::methods, entity::transaction, gql::context::GqlContext};
-use async_graphql::{Context, Object, Result};
+use crate::{
+    domain::transaction::methods,
+    entity::{category, transaction},
+    gql::context::GqlContext,
+};
+use async_graphql::{ComplexObject, Context, Object, Result};
 use sea_orm::{ActiveModelTrait, IntoActiveModel};
+
+#[ComplexObject]
+impl transaction::Model {
+    async fn category(&self, raw_ctx: &Context<'_>) -> Result<category::Model> {
+        let ctx = GqlContext::new(raw_ctx);
+
+        self.get_category(ctx.conn).await
+    }
+}
 
 #[derive(Default)]
 pub struct TransactionQuery;

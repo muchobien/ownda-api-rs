@@ -4,16 +4,22 @@ mod resolvers;
 
 use self::resolvers::{
     account::{AccountMutation, AccountQuery},
+    category::{CategoryMutation, CategoryQuery},
     transaction::{TransactionMutation, TransactionQuery},
     user::{UserMutation, UserQuery},
 };
 use async_graphql::{EmptySubscription, MergedObject, Schema, SchemaBuilder};
 
 #[derive(MergedObject, Default)]
-pub struct Query(UserQuery, AccountQuery, TransactionQuery);
+pub struct Query(AccountQuery, CategoryQuery, TransactionQuery, UserQuery);
 
 #[derive(MergedObject, Default)]
-pub struct Mutation(UserMutation, AccountMutation, TransactionMutation);
+pub struct Mutation(
+    AccountMutation,
+    CategoryMutation,
+    TransactionMutation,
+    UserMutation,
+);
 
 pub type GqlSchema = Schema<Query, Mutation, EmptySubscription>;
 

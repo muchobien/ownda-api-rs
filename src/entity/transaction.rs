@@ -3,7 +3,7 @@ use sea_orm::{entity::prelude::*, IntoActiveValue, Set};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, SimpleObject)]
 #[sea_orm(table_name = "Transaction")]
-#[graphql(name = "Transaction")]
+#[graphql(name = "Transaction", complex)]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
