@@ -23,7 +23,9 @@ impl ErrorExtensions for OwdaError {
             OwdaError::Unauthorized => e.set("code", StatusCode::UNAUTHORIZED.as_str()),
             OwdaError::Forbidden => e.set("code", StatusCode::FORBIDDEN.as_str()),
             OwdaError::BadRequest => e.set("code", StatusCode::BAD_REQUEST.as_str()),
-            OwdaError::InternalServerError => e.set("code", StatusCode::INTERNAL_SERVER_ERROR.as_str()),
+            OwdaError::InternalServerError => {
+                e.set("code", StatusCode::INTERNAL_SERVER_ERROR.as_str())
+            }
         })
     }
 }

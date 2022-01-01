@@ -1,2 +1,2 @@
-pub mod methods;
 pub mod create;
+pub mod methods;

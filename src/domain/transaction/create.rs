@@ -1,6 +1,6 @@
 use crate::entity::transaction::{ActiveModel, TransactionType};
 use async_graphql::InputObject;
-use sea_orm::{DeriveIntoActiveModel, prelude::Decimal};
+use sea_orm::{prelude::Decimal, DeriveIntoActiveModel};
 use uuid::Uuid;
 
 #[derive(InputObject, DeriveIntoActiveModel)]
