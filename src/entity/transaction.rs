@@ -1,5 +1,5 @@
 use async_graphql::{Enum, SimpleObject};
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, IntoActiveValue, Set};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, SimpleObject)]
 #[sea_orm(table_name = "Transaction")]
@@ -30,6 +30,12 @@ pub enum TransactionType {
     Income,
     #[sea_orm(string_value = "EXPENSE")]
     Expense,
+}
+
+impl IntoActiveValue<Self> for TransactionType {
+    fn into_active_value(self) -> sea_orm::ActiveValue<Self> {
+        Set(self)
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
