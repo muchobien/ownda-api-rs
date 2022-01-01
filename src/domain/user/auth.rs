@@ -89,7 +89,7 @@ impl AuthInput {
         .await?;
 
         let authenticated = generate_token(&m.id)
-            .map(|token| Credential::new(token))
+            .map(Credential::new)
             .map(|credentials| Authenticated {
                 user: m,
                 credentials,
@@ -108,7 +108,7 @@ impl AuthInput {
             .filter(user::Column::Email.eq(self.email.clone()))
             .one(conn)
             .await?
-            .ok_or(OwdaError::NotFound.extend())?;
+            .ok_or_else(|| OwdaError::NotFound.extend())?;
 
         let credentials = identity::Entity::find()
             .filter(
@@ -118,11 +118,11 @@ impl AuthInput {
             )
             .one(conn)
             .await?
-            .ok_or(OwdaError::NotFound.extend())?;
+            .ok_or_else(|| OwdaError::NotFound.extend())?;
 
         match verify_password(argon2, &self.hash, &credentials.hash)? {
             true => Ok(generate_token(&u.id)
-                .map(|token| Credential::new(token))
+                .map(Credential::new)
                 .map(|credentials| Authenticated {
                     user: u,
                     credentials,

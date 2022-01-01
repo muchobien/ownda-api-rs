@@ -8,7 +8,7 @@ pub async fn find_by_id(conn: &DatabaseConnection, id: uuid::Uuid) -> Result<cat
     category::Entity::find_by_id(id)
         .one(conn)
         .await?
-        .ok_or(OwdaError::NotFound.extend())
+        .ok_or_else(|| OwdaError::NotFound.extend())
 }
 
 pub async fn find_all(conn: &DatabaseConnection) -> Result<Vec<category::Model>> {
@@ -22,7 +22,7 @@ impl category::Model {
                 category::Entity::find_by_id(parent_id)
                     .one(conn)
                     .await?
-                    .ok_or(OwdaError::NotFound.extend())?,
+                    .ok_or_else(|| OwdaError::NotFound.extend())?,
             )),
             None => Ok(None),
         }

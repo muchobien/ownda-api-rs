@@ -8,7 +8,7 @@ pub async fn find_by_id(conn: &DatabaseConnection, id: uuid::Uuid) -> Result<use
     user::Entity::find_by_id(id)
         .one(conn)
         .await?
-        .ok_or(OwdaError::NotFound.extend())
+        .ok_or_else(|| OwdaError::NotFound.extend())
 }
 
 impl user::Model {
