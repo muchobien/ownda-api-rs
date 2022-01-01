@@ -1,22 +1,30 @@
+use async_graphql::{Enum, SimpleObject};
 use sea_orm::entity::prelude::*;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, SimpleObject)]
 #[sea_orm(table_name = "Transaction")]
+#[graphql(name = "Transaction")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub name: String,
     #[sea_orm(column_type = "Decimal(Some((10, 2)))")]
     pub amount: Decimal,
+    #[graphql(skip)]
     pub account_id: Uuid,
+    #[graphql(skip)]
     pub category_id: Uuid,
     pub r#type: TransactionType,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }
 
-#[derive(Debug, Clone, PartialEq, EnumIter, DeriveActiveEnum)]
-#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "transaction_type_enum")]
+#[derive(Debug, Clone, PartialEq, EnumIter, DeriveActiveEnum, Enum, Copy, Eq)]
+#[sea_orm(
+    rs_type = "String",
+    db_type = "Enum",
+    enum_name = "transaction_type_enum"
+)]
 pub enum TransactionType {
     #[sea_orm(string_value = "INCOME")]
     Income,

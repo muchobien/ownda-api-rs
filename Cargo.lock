@@ -92,6 +92,7 @@ dependencies = [
  "once_cell",
  "pin-project-lite",
  "regex",
+ "rust_decimal",
  "serde 1.0.132",
  "serde_json",
  "static_assertions",

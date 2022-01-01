@@ -3,10 +3,10 @@ use crate::{
         auth::{AuthInput, Authenticated},
         methods,
     },
-    entity::user,
+    entity::{account, user},
     gql::{context::GqlContext, guard::AuthGuard},
 };
-use async_graphql::{Context, Object, Result};
+use async_graphql::{ComplexObject, Context, Object, Result};
 
 #[derive(Default)]
 pub struct UserQuery;
@@ -36,5 +36,14 @@ impl UserMutation {
         let ctx = GqlContext::new(raw_ctx);
 
         input.login(ctx.conn, ctx.argon2).await
+    }
+}
+
+#[ComplexObject]
+impl user::Model {
+    async fn accounts(&self, raw_ctx: &Context<'_>) -> Result<Vec<account::Model>> {
+        let ctx = GqlContext::new(raw_ctx);
+
+        self.get_accounts(ctx.conn).await
     }
 }
