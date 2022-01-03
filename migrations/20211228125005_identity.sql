@@ -8,11 +8,6 @@ CREATE TABLE IF NOT EXISTS "Identity" (
     hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
     CONSTRAINT "PK_Identity" PRIMARY KEY (id),
-
-    CONSTRAINT "FK_Identity_User" FOREIGN KEY (user_id)
-        REFERENCES "User" (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+    CONSTRAINT "FK_Identity_User" FOREIGN KEY (user_id) REFERENCES "User" (id) ON DELETE CASCADE ON UPDATE CASCADE
 );

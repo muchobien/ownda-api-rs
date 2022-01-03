@@ -1,4 +1,21 @@
 {
   "rust-analyzer.checkOnSave.command": "clippy",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "sqltools.format": {
+    "linesBetweenQueries": 2,
+    "language": "sql",
+    "reservedWordCase": "upper"
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "100.87.131.83",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "ownda",
+      "database": "ownda",
+      "username": "krosf",
+      "password": "villanelle"
+    }
+  ]
 }
