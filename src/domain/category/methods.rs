@@ -29,12 +29,9 @@ impl category::Model {
     }
 
     pub async fn get_children(&self, conn: &DatabaseConnection) -> Result<Vec<category::Model>> {
-        match self.parent_id {
-            Some(parent_id) => Ok(category::Entity::find()
-                .filter(category::Column::ParentId.eq(parent_id))
-                .all(conn)
-                .await?),
-            None => Ok(vec![]),
-        }
+        Ok(category::Entity::find()
+            .filter(category::Column::ParentId.eq(self.id))
+            .all(conn)
+            .await?)
     }
 }

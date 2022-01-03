@@ -1,4 +1,4 @@
-use crate::entity::transaction::{ActiveModel, TransactionType};
+use crate::entity::{sea_orm_active_enums::TransactionTypeEnum, transaction::ActiveModel};
 use async_graphql::InputObject;
 use sea_orm::{prelude::Decimal, DeriveIntoActiveModel};
 use uuid::Uuid;
@@ -9,5 +9,5 @@ pub struct TransactionInput {
     pub amount: Decimal,
     pub account_id: Uuid,
     pub category_id: Uuid,
-    pub r#type: TransactionType,
+    pub r#type: TransactionTypeEnum,
 }

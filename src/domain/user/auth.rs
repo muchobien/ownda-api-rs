@@ -3,15 +3,15 @@ use argon2::{
     Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
 };
 use async_graphql::{ErrorExtensions, InputObject, Result, SimpleObject};
-use sea_orm::{ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set};
-
-use crate::domain::{error::OwdaError, jwt::generate_token};
-use crate::entity::{
-    identity::{self, Provider},
-    user,
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set,
 };
 
-use super::methods::find_by_id;
+use crate::entity::{identity, user};
+use crate::{
+    domain::{error::OwdaError, jwt::generate_token},
+    entity::sea_orm_active_enums::ProviderEnum,
+};
 
 #[derive(SimpleObject)]
 pub struct Credential {
@@ -38,7 +38,7 @@ pub struct Authenticated {
 pub struct AuthInput {
     #[graphql(validator(email))]
     email: String,
-    provider: Provider,
+    provider: ProviderEnum,
     hash: String,
 }
 
@@ -65,17 +65,15 @@ impl AuthInput {
         conn: &DatabaseConnection,
         argon2: &Argon2<'_>,
     ) -> Result<Authenticated> {
-        let res = user::Entity::insert(user::ActiveModel {
+        let m = user::ActiveModel {
             email: Set(self.email.clone()),
             ..Default::default()
-        })
-        .exec(conn)
+        }
+        .insert(conn)
         .await?;
 
-        let m = find_by_id(conn, res.last_insert_id).await?;
-
         let hash = match self.provider {
-            Provider::Local => Set(hash_password(argon2, &self.hash)?),
+            ProviderEnum::Local => Set(hash_password(argon2, &self.hash)?),
             _ => Set(self.hash.clone()),
         };
 
