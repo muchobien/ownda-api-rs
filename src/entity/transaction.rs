@@ -15,6 +15,7 @@ pub struct Model {
     #[graphql(skip)]
     pub account_id: Uuid,
     #[graphql(skip)]
+    pub to_account_id: Option<Uuid>,
     pub category_id: Uuid,
     pub r#type: TransactionTypeEnum,
     pub created_at: DateTimeWithTimeZone,
@@ -39,6 +40,14 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     Category,
+    #[sea_orm(
+        belongs_to = "super::account::Entity",
+        from = "Column::ToAccountId",
+        to = "super::account::Column::Id",
+        on_update = "Cascade",
+        on_delete = "SetNull"
+    )]
+    ToAccount,
 }
 
 impl Related<super::account::Entity> for Entity {
@@ -50,6 +59,16 @@ impl Related<super::account::Entity> for Entity {
 impl Related<super::category::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Category.def()
+    }
+}
+
+impl Linked for Entity {
+    type FromEntity = super::account::Entity;
+
+    type ToEntity = super::transaction::Entity;
+
+    fn link(&self) -> Vec<sea_orm::LinkDef> {
+        vec![Relation::Account.def(), Relation::ToAccount.def()]
     }
 }
 

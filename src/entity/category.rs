@@ -11,6 +11,8 @@ pub struct Model {
     #[sea_orm(unique)]
     pub name: String,
     pub parent_id: Option<Uuid>,
+    pub color: String,
+    pub order: i32,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }

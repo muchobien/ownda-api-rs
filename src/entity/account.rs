@@ -10,6 +10,8 @@ pub struct Model {
     pub id: Uuid,
     #[sea_orm(unique)]
     pub name: String,
+    pub color: String,
+    pub order: i32,
     #[graphql(skip)]
     pub user_id: Uuid,
     pub created_at: DateTimeWithTimeZone,

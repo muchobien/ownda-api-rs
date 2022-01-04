@@ -4,6 +4,23 @@ use async_graphql::Enum;
 use sea_orm::{entity::prelude::*, ActiveValue, IntoActiveValue, Set};
 
 #[derive(Debug, Clone, PartialEq, EnumIter, DeriveActiveEnum, Enum, Copy, Eq)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "provider_enum")]
+pub enum ProviderEnum {
+    #[sea_orm(string_value = "APPLE")]
+    Apple,
+    #[sea_orm(string_value = "GOOGLE")]
+    Google,
+    #[sea_orm(string_value = "LOCAL")]
+    Local,
+}
+
+impl IntoActiveValue<Self> for TransactionTypeEnum {
+    fn into_active_value(self) -> ActiveValue<Self> {
+        Set(self)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, EnumIter, DeriveActiveEnum, Enum, Copy, Eq)]
 #[sea_orm(
     rs_type = "String",
     db_type = "Enum",
@@ -14,21 +31,6 @@ pub enum TransactionTypeEnum {
     Expense,
     #[sea_orm(string_value = "INCOME")]
     Income,
-}
-
-impl IntoActiveValue<Self> for TransactionTypeEnum {
-    fn into_active_value(self) -> ActiveValue<Self> {
-        Set(self)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, EnumIter, DeriveActiveEnum, Enum, Copy, Eq)]
-#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "provider_enum")]
-pub enum ProviderEnum {
-    #[sea_orm(string_value = "APPLE")]
-    Apple,
-    #[sea_orm(string_value = "GOOGLE")]
-    Google,
-    #[sea_orm(string_value = "LOCAL")]
-    Local,
+    #[sea_orm(string_value = "TRANSFER")]
+    Transfer,
 }

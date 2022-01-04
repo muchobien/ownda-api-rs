@@ -2,6 +2,8 @@
 CREATE TABLE IF NOT EXISTS "Account" (
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL UNIQUE,
+    color VARCHAR(255) NOT NULL,
+    "order" INT NOT NULL DEFAULT 0,
     user_id UUID NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
