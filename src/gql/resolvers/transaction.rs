@@ -1,4 +1,4 @@
-use crate::domain::transaction::create::TransactionInput;
+use crate::domain::transaction::create::{TransactionFilter, TransactionInput};
 use crate::gql::guard::AuthGuard;
 use crate::{
     domain::transaction::methods,
@@ -37,11 +37,11 @@ impl TransactionQuery {
     async fn transactions(
         &self,
         raw_ctx: &Context<'_>,
-        account_id: uuid::Uuid,
+        filter: TransactionFilter,
     ) -> Result<Vec<transaction::Model>> {
         let ctx = GqlContext::new(raw_ctx);
 
-        methods::find_by_account_id(ctx.conn, account_id).await
+        filter.apply(ctx.conn).await
     }
 }
 
