@@ -109,5 +109,6 @@ impl TryFrom<String> for Environment {
 
 #[derive(Deserialize)]
 pub struct SecretSettings {
-    pub jwt_key: String,
+    pub jwt_access_key: String,
+    pub jwt_refresh_key: String,
 }

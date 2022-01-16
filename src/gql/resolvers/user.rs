@@ -1,6 +1,6 @@
 use crate::{
     domain::user::{
-        auth::{AuthInput, Authenticated},
+        auth::{refresh_token, AuthInput, Authenticated, Credential},
         methods,
     },
     entity::{account, user},
@@ -36,6 +36,12 @@ impl UserMutation {
         let ctx = GqlContext::new(raw_ctx);
 
         input.login(ctx.conn, ctx.argon2).await
+    }
+
+    async fn refresh_token(&self, raw_ctx: &Context<'_>, token: String) -> Result<Credential> {
+        let ctx = GqlContext::new(raw_ctx);
+
+        refresh_token(ctx.conn, token.as_ref()).await
     }
 }
 

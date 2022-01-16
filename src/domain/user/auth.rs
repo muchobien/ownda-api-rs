@@ -7,22 +7,29 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set,
 };
 
-use crate::entity::{identity, user};
 use crate::{
-    domain::{error::OwdaError, jwt::generate_token},
+    domain::jwt::user_id_from_refresh_token,
+    entity::{identity, user},
+};
+use crate::{
+    domain::{error::OwdaError, jwt::generate_tokens},
     entity::sea_orm_active_enums::ProviderEnum,
 };
 
+use super::methods::find_by_id;
+
 #[derive(SimpleObject)]
 pub struct Credential {
+    pub refresh_token: String,
     pub access_token: String,
     pub token_type: String,
 }
 
 impl Credential {
-    pub fn new(access_token: String) -> Self {
+    pub fn new((access_token, refresh_token): (String, String)) -> Self {
         Self {
             access_token,
+            refresh_token,
             token_type: "Bearer".to_string(),
         }
     }
@@ -86,7 +93,7 @@ impl AuthInput {
         .exec(conn)
         .await?;
 
-        let authenticated = generate_token(&m.id)
+        let authenticated = generate_tokens(&m.id)
             .map(Credential::new)
             .map(|credentials| Authenticated {
                 user: m,
@@ -119,7 +126,7 @@ impl AuthInput {
             .ok_or_else(|| OwdaError::NotFound.extend())?;
 
         match verify_password(argon2, &self.hash, &credentials.hash)? {
-            true => Ok(generate_token(&u.id)
+            true => Ok(generate_tokens(&u.id)
                 .map(Credential::new)
                 .map(|credentials| Authenticated {
                     user: u,
@@ -129,4 +136,13 @@ impl AuthInput {
             false => Err(OwdaError::Unauthorized.extend()),
         }
     }
+}
+
+pub async fn refresh_token(conn: &DatabaseConnection, token: &str) -> Result<Credential> {
+    let id = user_id_from_refresh_token(token).map_err(|_| OwdaError::Unauthorized)?;
+    let u = find_by_id(conn, id).await?;
+
+    Ok(generate_tokens(&u.id)
+        .map(Credential::new)
+        .map_err(|_| OwdaError::InternalServerError.extend())?)
 }

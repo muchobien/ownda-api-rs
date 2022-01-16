@@ -18,7 +18,7 @@ use crate::settings::SETTINGS;
 
 #[derive(Debug)]
 struct Keys {
-    encoding: EncodingKey,
+    pub encoding: EncodingKey,
     decoding: DecodingKey<'static>,
 }
 
@@ -31,7 +31,63 @@ impl Keys {
     }
 }
 
-static KEYS: Lazy<Keys> = Lazy::new(|| Keys::new(SETTINGS.secret.jwt_key.as_bytes()));
+#[derive(Debug)]
+struct Secret {
+    pub access: Keys,
+    pub refresh: Keys,
+}
+
+impl Secret {
+    fn new(access: &[u8], refresh: &[u8]) -> Self {
+        Self {
+            access: Keys::new(access),
+            refresh: Keys::new(refresh),
+        }
+    }
+}
+
+static KEYS: Lazy<Secret> = Lazy::new(|| {
+    Secret::new(
+        SETTINGS.secret.jwt_access_key.as_bytes(),
+        SETTINGS.secret.jwt_refresh_key.as_bytes(),
+    )
+});
+
+pub fn generate_token(user_id: &uuid::Uuid, days: u64, key: &EncodingKey) -> Result<String> {
+    let claims = Claims {
+        sub: user_id.to_string(),
+        company: "OWNDA".to_owned(),
+        exp: (SystemTime::now() + Duration::from_secs(60 * 60 * 24 * days))
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            .try_into()
+            .unwrap(),
+    };
+
+    Ok(jsonwebtoken::encode(
+        &jsonwebtoken::Header::default(),
+        &claims,
+        key,
+    )?)
+}
+
+pub fn generate_tokens(user_id: &uuid::Uuid) -> Result<(String, String)> {
+    let access_token = generate_token(user_id, 7, &KEYS.access.encoding)?;
+    let refresh_token = generate_token(user_id, 30, &KEYS.refresh.encoding)?;
+
+    Ok((access_token, refresh_token))
+}
+
+pub fn user_id_from_refresh_token(refresh_token: &str) -> Result<uuid::Uuid> {
+    let claims = decode::<Claims>(
+        refresh_token,
+        &KEYS.refresh.decoding,
+        &Validation::default(),
+    )?;
+
+    Ok(uuid::Uuid::parse_str(&claims.claims.sub)?)
+}
 
 #[derive(Debug)]
 pub enum AuthError {
@@ -77,26 +133,13 @@ where
                 .await
                 .map_err(|_| AuthError::InvalidToken)?;
         // Decode the user data
-        let token_data = decode::<Claims>(bearer.token(), &KEYS.decoding, &Validation::default())
-            .map_err(|_| AuthError::InvalidToken)?;
+        let token_data = decode::<Claims>(
+            bearer.token(),
+            &KEYS.access.decoding,
+            &Validation::default(),
+        )
+        .map_err(|_| AuthError::InvalidToken)?;
 
         Ok(token_data.claims)
     }
-}
-
-pub fn generate_token(user_id: &uuid::Uuid) -> Result<String> {
-    let claims = Claims {
-        sub: user_id.to_string(),
-        company: "OWNDA".to_owned(),
-        exp: (SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 7))
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs() as usize,
-    };
-
-    Ok(jsonwebtoken::encode(
-        &jsonwebtoken::Header::default(),
-        &claims,
-        &KEYS.encoding,
-    )?)
 }
