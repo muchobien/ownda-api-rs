@@ -9,7 +9,7 @@ publish = false
 [dependencies]
 axum = "0.4.4"
 async-graphql-axum = "3.0.21"
-anyhow = "1.0.52"
+anyhow = "1.0.53"
 uuid = "0.8.2"
 tower = "0.4.11"
 jsonwebtoken = "7.2.0"
