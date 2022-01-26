@@ -8,7 +8,7 @@ publish = false
 
 [dependencies]
 axum = "0.4.4"
-async-graphql-axum = "3.0.24"
+async-graphql-axum = "3.0.26"
 anyhow = "1.0.53"
 uuid = "0.8.2"
 tower = "0.4.11"
@@ -27,7 +27,7 @@ version = "1.0.136"
 features = ["derive"]
 
 [dependencies.async-graphql]
-version = "3.0.25"
+version = "3.0.26"
 features = ["uuid", "chrono", "apollo_tracing", "log", "decimal"]
 
 [dependencies.tokio]
