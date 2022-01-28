@@ -31,7 +31,7 @@ version = "3.0.26"
 features = ["uuid", "chrono", "apollo_tracing", "log", "decimal"]
 
 [dependencies.tokio]
-version = "1.15.0"
+version = "1.16.0"
 features = ["full"]
 
 [dependencies.sea-orm]
