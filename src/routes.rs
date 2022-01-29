@@ -37,7 +37,7 @@ pub fn gql() -> Router {
     let gql_config = &SETTINGS.application.graphql;
     let schema_router = Router::new();
 
-    match gql_config.playground_enabled {
+    match gql_config.playground {
         true => schema_router.route(
             &gql_config.path,
             post(graphql_handler).get(graphql_playground),

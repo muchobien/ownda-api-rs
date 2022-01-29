@@ -1,9 +1,0 @@
-application:
-  graphql:
-    playground_enabled: true
-database:
-  host: "100.87.131.83"
-  logging: true
-secret:
-  jwt_access_key: jwt_access_key
-  jwt_refresh_key: jwt_refresh_key

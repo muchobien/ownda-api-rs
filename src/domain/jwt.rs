@@ -48,8 +48,8 @@ impl Secret {
 
 static KEYS: Lazy<Secret> = Lazy::new(|| {
     Secret::new(
-        SETTINGS.secret.jwt_access_key.as_bytes(),
-        SETTINGS.secret.jwt_refresh_key.as_bytes(),
+        SETTINGS.secret.jwt.access.as_bytes(),
+        SETTINGS.secret.jwt.refresh.as_bytes(),
     )
 });
 
