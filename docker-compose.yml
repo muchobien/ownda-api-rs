@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  ownda:
+    image: krosf/ownda:0.0.1
+    container_name: ownda
+    restart: unless-stopped
+    environment:
+      RUST_LOG: debug
+      OWNDA_APPLICATION_HOST: "0.0.0.0"
+      OWNDA_APPLICATION_PORT: "8000"
+      OWNDA_APPLICATION_GRAPHQL_PATH: /graphql
+      OWNDA_APPLICATION_GRAPHQL_PLAYGROUND: "true"
+      OWNDA_DATABASE_HOST: "100.87.131.83"
+      OWNDA_DATABASE_PORT: "5432"
+      OWNDA_DATABASE_USERNAME: krosf
+      OWNDA_DATABASE_PASSWORD: villanelle
+      OWNDA_DATABASE_NAME: ownda
+      OWNDA_SECRET_JWT_ACCESS: jwt_access_key
+      OWNDA_SECRET_JWT_REFRESH: jwt_refresh_key
+    ports:
+      - "8000:8000"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ownda.entrypoints: websecure
+      traefik.http.services.ownda.loadbalancer.server.port: 8000
