@@ -8,7 +8,7 @@ publish = false
 
 [dependencies]
 axum = "0.4.5"
-async-graphql-axum = "3.0.26"
+async-graphql-axum = "3.0.28"
 anyhow = "1.0.53"
 uuid = "0.8.2"
 tower = "0.4.11"
