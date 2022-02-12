@@ -16,22 +16,20 @@ use std::time::SystemTime;
 
 use crate::settings::SETTINGS;
 
-#[derive(Debug)]
 struct Keys {
-    pub encoding: EncodingKey,
-    decoding: DecodingKey<'static>,
+    encoding: EncodingKey,
+    decoding: DecodingKey,
 }
 
 impl Keys {
     fn new(secret: &[u8]) -> Self {
         Self {
             encoding: EncodingKey::from_secret(secret),
-            decoding: DecodingKey::from_secret(secret).into_static(),
+            decoding: DecodingKey::from_secret(secret),
         }
     }
 }
 
-#[derive(Debug)]
 struct Secret {
     pub access: Keys,
     pub refresh: Keys,
