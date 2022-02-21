@@ -9,7 +9,7 @@ publish = false
 [dependencies]
 axum = "0.4.5"
 async-graphql-axum = "3.0.29"
-anyhow = "1.0.53"
+anyhow = "1.0.54"
 uuid = "0.8.2"
 tower = "0.4.12"
 headers = "0.3.7"
