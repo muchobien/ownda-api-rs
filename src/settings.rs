@@ -15,9 +15,11 @@ pub struct Settings {
 
 impl Settings {
     pub fn new() -> anyhow::Result<Self> {
-        let mut settings = config::Config::default();
-        settings.merge(config::Environment::with_prefix("OWNDA").separator("_"))?;
-        Ok(settings.try_into()?)
+        let settings = config::Config::builder()
+            .add_source(config::Environment::with_prefix("OWNDA").separator("_"))
+            .build()?;
+
+        Ok(settings.try_deserialize()?)
     }
 }
 
