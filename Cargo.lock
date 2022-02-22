@@ -103,9 +103,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-axum"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44847b2ddd057ba4ed1be2722315ae315e8c5dc0748ee01a163a08164390489c"
+checksum = "8c86f50317ed9b630eed6562e06ccbf48a0869cce4c47f9e2cedf3a69f92b914"
 dependencies = [
  "async-graphql",
  "async-trait",
