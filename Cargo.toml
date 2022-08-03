@@ -26,7 +26,7 @@ version = "8.0.1"
 
 [dependencies.config]
 default-features = false
-version = "0.12.0"
+version = "0.13.2"
 features = ["json"]
 
 [dependencies.serde]
